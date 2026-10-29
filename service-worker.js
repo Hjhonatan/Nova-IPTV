@@ -1,6 +1,6 @@
 // Service worker: solo recursos estáticos propios. Nunca se guardan en caché transmisiones, listas,
 // guías ni logotipos de terceros (todo lo que no sea del mismo origen pasa directo a la red).
-const VERSION = 'v1.1.0';
+const VERSION = 'v1.2.0';
 const CACHE = 'nova-iptv-' + VERSION;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',

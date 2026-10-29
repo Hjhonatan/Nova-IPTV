@@ -106,3 +106,15 @@ Automáticas (en este entorno):
 ## Uso responsable
 
 Usa únicamente listas y transmisiones a las que tengas derecho legal de acceso. Esta app es un reproductor genérico y no proporciona ni elude restricciones de acceso o licencias.
+
+## App Android (APK) con GitHub Actions
+
+Para reproducir canales `http://` y evitar las restricciones de CORS del navegador, el proyecto incluye una versión empaquetada con Capacitor (WebView con `http` permitido):
+
+1. Sube al repositorio todos los archivos, incluidos `package.json`, `capacitor.config.json` y `.github/workflows/build-apk.yml`.
+2. En GitHub: pestaña **Actions** → «Compilar APK de Android» → **Run workflow**.
+3. Espera unos minutos, abre la ejecución y descarga el artefacto **NovaIPTV-apk** (un zip con `NovaIPTV.apk`).
+4. Instala el APK en Android (permite «instalar apps de origen desconocido» para tu navegador o gestor de archivos).
+
+Si creas una etiqueta `vX.Y.Z`, el APK también se publica en **Releases**. El APK sale firmado con la clave de depuración (válido para uso personal; no sirve para Play Store).
+Notas: el modo pantalla completa es simulado dentro de la app y no fuerza la orientación horizontal.

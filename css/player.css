@@ -3,6 +3,8 @@
 .stage video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
 .stage:fullscreen, .stage:-webkit-full-screen { aspect-ratio: auto; max-height: none; margin: 0; width: 100vw; height: 100vh; }
 
+.stage.fake-full { position: fixed; inset: 0; z-index: 45; width: 100%; height: 100dvh; max-height: none; aspect-ratio: auto; margin: 0; }
+
 .spinner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 .spinner i { width: 42px; height: 42px; border: 4px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .9s linear infinite; }
 

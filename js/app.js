@@ -513,6 +513,7 @@ function step(d) {
 function closePlayer(fromPop) {
   if ($('player').hidden) return;
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  $('playerStage').classList.remove('fake-full');
   player.stop(); clearTimeout(hideTimer);
   $('player').hidden = true; document.body.style.overflow = '';
   if (!fromPop && history.state && history.state.player) history.back();
@@ -541,7 +542,10 @@ $('btnFull').addEventListener('click', async () => {
       await (stage.requestFullscreen ? stage.requestFullscreen() : stage.webkitRequestFullscreen());
       if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
     }
-  } catch { toast('Tu navegador no permite pantalla completa aquí.'); }
+  } catch {
+    // Algunos WebView (apps Android) no soportan la API: se usa un modo "pantalla completa" simulado.
+    stage.classList.toggle('fake-full');
+  }
 });
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch { /* noop */ } }
