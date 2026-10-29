@@ -46,11 +46,13 @@ export function createPlayer(els, hooks = {}) {
   let triedHlsFallback = false;
   let startTimer = null;
   let lastDetail = '';
+  let activeUrl = '';
+  let upgraded = false; // true si se cambió http:// por https:// para este intento
 
   function setLoading(on) { spinner.hidden = !on; }
   function showError(err, detail) {
     setLoading(false);
-    errorMsg.textContent = err.msg;
+    errorMsg.textContent = err.msg + (upgraded ? ' (La app probó la versión https:// de este canal; es probable que su servidor no la admita.)' : '');
     lastDetail = detail || '';
     errorDetail.textContent = lastDetail;
     errorDetail.hidden = true;
@@ -77,7 +79,7 @@ export function createPlayer(els, hooks = {}) {
 
   async function startHls(url) {
     const Hls = await loadHlsLib().catch(() => null);
-    if (!current || current.url !== url) return;
+    if (!current || activeUrl !== url) return;
     if (Hls && Hls.isSupported()) {
       hls = new Hls({ enableWorker: true, lowLatencyMode: false, maxBufferLength: 20, backBufferLength: 10, manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2 });
       let netRecoveries = 0; let mediaRecoveries = 0;
@@ -115,11 +117,18 @@ export function createPlayer(els, hooks = {}) {
     hooks.onChannel && hooks.onChannel(channel);
 
     if (!navigator.onLine) return showError(classifyError('offline'));
-    if (location.protocol === 'https:' && /^http:/i.test(channel.url)) {
-      return showError(classifyError('mixed'), 'Contenido mixto bloqueado · ' + redactUrl(channel.url));
+    let url = channel.url;
+    upgraded = false;
+    if (location.protocol === 'https:' && /^http:/i.test(url)) {
+      if (hooks.getUpgradeHttp && hooks.getUpgradeHttp()) {
+        url = url.replace(/^http:/i, 'https:');
+        upgraded = true;
+      } else {
+        return showError(classifyError('mixed'), 'Contenido mixto bloqueado · ' + redactUrl(url));
+      }
     }
+    activeUrl = url;
     armTimeout();
-    const url = channel.url;
     const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
     if (looksHls(url) && !nativeHls) {
       await startHls(url);
@@ -145,7 +154,7 @@ export function createPlayer(els, hooks = {}) {
     if (code === 4 && !triedHlsFallback && !looksHls(current.url)) {
       triedHlsFallback = true;
       video.removeAttribute('src'); video.load();
-      startHls(current.url);
+      startHls(activeUrl);
       return;
     }
     release();

@@ -370,6 +370,13 @@ function renderSettings(v) {
   themeSel.addEventListener('change', () => { prefs.set('theme', themeSel.value); applyTheme(themeSel.value); });
   v.append(h('div', { class: 'card' }, h('h3', { text: 'Apariencia' }), h('div', { class: 'toggle' }, h('span', { text: 'Tema' }), themeSel)));
 
+  // Reproducción
+  const upg = h('input', { type: 'checkbox', 'aria-label': 'Probar https en canales http' });
+  upg.checked = prefs.get('upgradeHttp', true);
+  upg.addEventListener('change', () => prefs.set('upgradeHttp', upg.checked));
+  v.append(h('h3', { class: 'section-title', text: 'Reproducción' }), h('div', { class: 'card' },
+    h('label', { class: 'toggle' }, h('span', {}, 'Probar https:// en canales http://', h('div', { class: 'muted small', text: 'El navegador bloquea canales http:// desde una página HTTPS. Con esto se intenta la versión https:// del mismo canal; solo funciona si el servidor la admite.' })), upg)));
+
   // Listas
   const plStatus = h('div');
   v.append(h('h3', { class: 'section-title', text: 'Listas' }), h('div', { class: 'card' },
@@ -439,6 +446,7 @@ const player = createPlayer({
   errorBox: $('errorBox'), errorMsg: $('errorMsg'), errorDetailBtn: $('btnErrorDetail'), errorDetail: $('errorDetail'),
 }, {
   onChannel: onPlayerChannel,
+  getUpgradeHttp: () => prefs.get('upgradeHttp', true),
   onState: (s) => {
     $('icoPlay').hidden = s === 'playing'; $('icoPause').hidden = s !== 'playing';
     if (s === 'playing') {
